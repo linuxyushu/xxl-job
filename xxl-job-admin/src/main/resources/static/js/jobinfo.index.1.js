@@ -257,25 +257,30 @@ $(function() {
         $('#jobTriggerModal').modal({backdrop: false, keyboard: false}).modal('show');
     });
     $("#jobTriggerModal .ok").on('click',function() {
-        $.ajax({
-            type : 'POST',
-            url : base_url + "/jobinfo/trigger",
-            data : {
-                "id" : $("#jobTriggerModal .form input[name='id']").val(),
-                "executorParam" : $("#jobTriggerModal .textarea[name='executorParam']").val(),
+	$('#jobTriggerModal').modal('hide');
+	layer.load(2);
+	$.ajax({
+	    type : 'POST',
+	    url : base_url + "/jobinfo/trigger",
+	    data : {
+		"id" : $("#jobTriggerModal .form input[name='id']").val(),
+		"executorParam" : $("#jobTriggerModal .textarea[name='executorParam']").val(),
 				"addressList" : $("#jobTriggerModal .textarea[name='addressList']").val()
-            },
-            dataType : "json",
-            success : function(data){
-                if (data.code == 200) {
-                    $('#jobTriggerModal').modal('hide');
-
-                    layer.msg( I18n.jobinfo_opt_run + I18n.system_success );
-                } else {
-                    layer.msg( data.msg || I18n.jobinfo_opt_run + I18n.system_fail );
-                }
-            }
-        });
+	    },
+	    dataType : "json",
+		success : function(data){
+			layer.closeAll('loading');
+			if (data.code == 200) {
+				layer.msg( I18n.jobinfo_opt_run + I18n.system_success );
+			} else {
+				layer.msg( data.msg || I18n.jobinfo_opt_run + I18n.system_fail );
+			}
+		},
+		error: function(){
+			layer.closeAll('loading');
+			layer.msg( "系統异常，请联系管理员" );
+		}
+	});
     });
     $("#jobTriggerModal").on('hide.bs.modal', function () {
         $("#jobTriggerModal .form")[0].reset();
